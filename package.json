@@ -1,0 +1,38 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for chat bord",
+  "keywords": [
+    "nodejs",
+    "mongoose",
+    "express",
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "Rehan",
+  "type": "module",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.js",
+    "dev": "nodemon --trace-warnings ./src/index.js",
+    "build": "webpack --mode production"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "prettier": "^3.4.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.37.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "google-auth-library": "^9.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^8.9.3",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.7.0"
+  }
+}
