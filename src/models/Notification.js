@@ -4,7 +4,8 @@ const notificationSchema = new mongoose.Schema({
     recipient: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
+        index: true
     },
     sender: {
         type: mongoose.Schema.Types.ObjectId,
@@ -13,13 +14,17 @@ const notificationSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['friend_request', 'friend_accepted', 'message', 'system'],
+        enum: ['message', 'friend_request', 'friend_accepted', 'system'],
         required: true
     },
-    content: {
-        type: String,
-        required: true
+    messageId: {  // Reference to the message if type is 'message'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message',
+        required: function() {
+            return this.type === 'message';
+        }
     },
+    content: String,
     read: {
         type: Boolean,
         default: false

@@ -1,29 +1,76 @@
 import { Message } from '../models/Message.js';
 import { User } from '../models/index.js';
+import { v2 as cloudinary } from 'cloudinary';
+import { Notification } from '../models/Notification.js';
 
 export const sendMessage = async (req, res, next) => {
     try {
-        const { recipientId, content } = req.body;
+        const { recipientId, content, type } = req.body;
         const senderId = req.user._id;
-
-        const message = await Message.create({
+        
+        // Create message
+        let messageData = {
             sender: senderId,
             recipient: recipientId,
-            content
-        });
+            content,
+            type: type || 'text'
+        };
 
-        // Populate sender details
+        if (req.file) {
+            messageData = {
+                ...messageData,
+                fileName: req.file.originalname,
+                fileSize: req.file.size,
+                fileUrl: req.file.path,
+                type: req.file.mimetype.startsWith('image/') ? 'image' : 'file'
+            };
+        }
+
+        const message = await Message.create(messageData);
         await message.populate('sender', 'username');
 
-        // Emit socket event for real-time updates
+        // Create notification
+        const sender = await User.findById(senderId).select('username');
+        const notification = await Notification.create({
+            recipient: recipientId,
+            sender: senderId,
+            type: 'message',
+            messageId: message._id,
+            content: `New message from ${sender.username}: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`
+        });
+
+        // Emit socket events
         const io = req.app.get('io');
+        
+        // Emit new message event
         io.to(recipientId).emit('newMessage', message);
+        
+        // Emit notification event
+        io.to(recipientId).emit('newNotification', {
+            notification: {
+                _id: notification._id,
+                sender: {
+                    _id: sender._id,
+                    username: sender.username
+                },
+                type: 'message',
+                content: notification.content,
+                messageId: message._id,
+                createdAt: notification.createdAt
+            }
+        });
 
         res.status(201).json({
             status: 'success',
-            data: { message }
+            data: { 
+                message,
+                notification 
+            }
         });
     } catch (error) {
+        if (req.file?.path) {
+            await cloudinary.uploader.destroy(req.file.filename);
+        }
         next(error);
     }
 };

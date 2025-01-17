@@ -124,4 +124,26 @@ export const deleteNotification = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+export const getMessageNotifications = async (req, res, next) => {
+    try {
+        const userId = req.user._id;
+
+        const notifications = await Notification.find({
+            recipient: userId,
+            type: 'message'
+        })
+        .populate('sender', 'username')
+        .populate('messageId', 'content type fileName')
+        .sort('-createdAt')
+        .limit(50);
+
+        res.json({
+            status: 'success',
+            data: notifications
+        });
+    } catch (error) {
+        next(error);
+    }
 }; 
