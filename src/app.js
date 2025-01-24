@@ -68,15 +68,13 @@ app.use('/api/v1/users', userRoute);
 app.use(errorHandler);
 
 // Socket.io connection handling
-io.on('connection', async (socket) => {
-    console.log('A user connected');
-
-    // Get user ID from auth token
+io.on('connect', async (socket) => {
+    console.log('A user connected'); 
     const userId = socket.handshake.auth.userId;
     if (userId) {
         // Store socket id for user and update online status
         await User.findByIdAndUpdate(userId, {
-            socketId: socket.id,
+            socketId: socket.id, 
             online: true
         });
 
@@ -97,7 +95,7 @@ io.on('connection', async (socket) => {
     socket.on('join', (userId) => {
         socket.join(userId);
         console.log(`User ${userId} joined their rooms`);
-    });
+    }); 
 
     socket.on('typing', (data) => {
         socket.to(data.receiverId).emit('userTyping', {
@@ -105,6 +103,7 @@ io.on('connection', async (socket) => {
             typing: true
         });
     });
+
 
     socket.on('stopTyping', (data) => {
         socket.to(data.receiverId).emit('userTyping', {
