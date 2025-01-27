@@ -94,7 +94,6 @@ io.on('connect', async (socket) => {
     // Combined join handler for both chat and notifications
     socket.on('join', (userId) => {
         socket.join(userId);
-        console.log(`User ${userId} joined their rooms`);
     }); 
 
     socket.on('typing', (data) => {
@@ -103,8 +102,7 @@ io.on('connect', async (socket) => {
             typing: true
         });
     });
-
-
+    
     socket.on('stopTyping', (data) => {
         socket.to(data.receiverId).emit('userTyping', {
             senderId: data.senderId,
