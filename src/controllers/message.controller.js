@@ -154,4 +154,31 @@ export const deleteMessage = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}; 
+};
+
+export const markMessageAsRead = async (req, res, next) => {
+    try {
+        const { messageId } = req.params;
+        const userId = req.user._id;
+
+        const message = await Message.findOneAndUpdate(
+            { _id: messageId, recipient: userId },
+            { read: true },
+            { new: true }
+        );
+
+        if (!message) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Message not found or unauthorized'
+            });
+        }
+
+        res.json({
+            status: 'success',
+            data: { message }
+        });
+    } catch (error) {
+        next(error);
+    }
+};

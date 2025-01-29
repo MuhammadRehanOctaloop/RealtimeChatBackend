@@ -5,7 +5,8 @@ import {
     sendMessage, 
     getConversation,
     deleteMessage,
-    editMessage 
+    editMessage,
+    markMessageAsRead
 } from '../controllers/message.controller.js';
 
 const router = express.Router();
@@ -15,6 +16,7 @@ router.use(authenticate); // Protect all message routes
 router.post('/', upload.single('file'), sendMessage);
 router.get('/conversation/:userId', getConversation);
 router.patch('/:messageId', editMessage);
+router.patch('/:messageId/read', authenticate, markMessageAsRead);
 router.delete('/:messageId', deleteMessage);
 
-export default router; 
+export default router;

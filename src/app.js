@@ -6,7 +6,6 @@ import http from 'http';
 import { 
     authRoute, 
     friendRoute, 
-    messageRoute, 
     healthCheckRouter,
     notificationRoute 
 } from './routes/index.js';
@@ -14,6 +13,7 @@ import { errorHandler } from './middlewares/error.middleware.js';
 import { Notification } from './models/Notification.js';
 import { User } from './models/index.js';
 import userRoute from './routes/user.route.js';
+import messageRoute from './routes/message.route.js';
 
 // Initialize dotenv
 dotenv.config();
